@@ -1,0 +1,14 @@
+flask
+Flask-SQLAlchemy
+flask-security-too
+flask-restful
+flask_bcrypt
+Flask-Caching
+flask_cors
+redis
+celery[redis]
+email_validator
+Flask-Mail
+weasyprint
+matplotlib
+numpy

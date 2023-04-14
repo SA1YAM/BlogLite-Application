@@ -1,0 +1,1528 @@
+openapi: 3.0.3
+info:
+  title: BlogLite - RestAPI 
+  description: |-
+    This a document for the Rest API used for CRUD opeartions in backend in BlogLite. Token based Authentication is used for protection of API.
+  version: 1.0.0
+  
+servers:
+  - url: http://127.0.0.1:5000
+tags: 
+  - name: Users
+    description: Request methods for Users
+  - name: Dashboards
+    description: Request methods for dashboard
+  - name: MyProfile
+    description: Request methods for MyProfile
+  - name: MyPosts
+    description: Request methods for MyPosts
+  - name: OtherProfile
+    description: Request methods for OtherProfile
+  - name: Post
+    description: Request methods for Post
+  - name: Connect
+    description: Request methods for Connect
+  - name: ProfilePhoto
+    description: Request methods for ProfilePhoto
+  - name: Inboxs
+    description: Request methods for Inboxs
+  - name: Messages
+    description: Request methods for Messages
+  - name: Followers
+    description: Request methods for Followers
+  - name: OtherFollowers
+    description: Request methods for OtherFollowers
+  - name: Following
+    description: Request methods for Following
+  - name: OtherFollowing
+    description: Request methods for OtherFollowing
+  - name: Likes
+    description: Request methods for Likes
+  - name: Comments
+    description: Request methods for Comments
+  - name: Notifications
+    description: Request methods for Notifications
+  - name: Exportcsv
+    description: Request methods for Exportcsv
+  - name: ReportFormat
+    description: Request methods for ReportFormat
+paths:
+  /api/user:
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: This can be done by signing up.
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: theUser
+                full_name:
+                  type: string
+                  example: John wick
+                email:
+                  type: string
+                  example: john@email.com
+                Password:
+                  type: string
+                  example: '12345'
+                dob:
+                  type: string
+                  description: Date of birth
+                  format: date
+                  example: 1996-07-02 
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_fields'  
+                       
+        '400':
+          description: Bad Request
+        '409':
+          description: Invalid details
+                
+    get:
+      tags:
+        - Users
+      summary: Get user
+      description: Returns the current user
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_fields'          
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+
+    delete:
+      tags:
+        - Users
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      security: 
+        - tokenAuth: []
+#      requestBody:
+#        description: Request Body
+#        required: True
+#        content:
+#          application/json:
+#            schema:
+#              type: object
+#              properties:
+#                username:
+#                  type: string
+#                  example: theUser
+#                full_name:
+#                  type: string
+#                  example: John wick
+#                email:
+#                  type: string
+#                  example: john@email.com
+#                Password:
+#                  type: string
+#                  example: '12345'
+#                dob:
+#                  type: string
+#                  description: Date of birth
+#                  format: date
+#                  example: 1996-07-02 
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/dashboard:
+    get:
+      tags:
+        - Dashboards
+      summary: Get Posts for user feed
+      description: Returns the list of Posts
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post_fields'          
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/myprofile:
+    get:
+      tags:
+        - MyProfile
+      summary: Get details for current user profile
+      description: Returns the current user
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_fields1'          
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/myposts:
+    get:
+      tags:
+        - MyPosts
+      summary: Get details for current user posts
+      description: Returns the list of titles of posts created by user
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      type: string
+                    
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/otherprofile/{user_name}:
+    get:
+      tags:
+        - OtherProfile
+      summary: Get details for other user posts
+      description: Returns the list of posts created by other user
+      parameters:
+        - name: user_name
+          in: path
+          description: username
+          required: true
+          schema:
+            type: string
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_fields1'
+                    
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/post:
+    post:
+      tags:
+        - Post
+      summary: Create Post
+      description: Creation of Blog
+      security: 
+        - tokenAuth: []
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+           multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: post title
+                caption:
+                  type: string
+                  example: post caption
+                archive_switch:
+                  type: boolean
+                  example: false
+                file:
+                  type: string
+                  description: uploaded image
+                  format: binary
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post_id:
+                    type: integer
+                    format: int64
+                    example: 10
+                  title:
+                    type: string
+                    example: theUser
+                  caption:
+                    type: string
+                    example: John wick is a movie
+                  image_url:
+                    type: string
+                    description: Image url of the profile photo
+                    example: filename.jpg
+                  time_stamp:
+                    type: string
+                    description: Timestamp of the user creation
+                    format: date-time
+                    example: 2020-07-02 12:32:12
+                  user_id:
+                    type: integer
+                    description: id of User(Foreign Key)
+                    format: int64
+                    example: 10
+                  username:
+                    type: string
+                    description: username of User(Foreign Key)
+                    example: theUser
+                  archive_switch:
+                    type: boolean
+                    description: archive status of post
+                    example: False
+                  likes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Like'
+                    description: likes recieved on the post
+                    example: []
+                  comments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+                    description: comments recieved on the post 
+                    example: []
+                       
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/post/{post_id}:
+    parameters:
+      - in: path
+        name: post_id
+        schema:
+          type: integer
+        required: true
+        description: Post ID
+    put:
+      tags:
+        - Post
+      summary: Edit Post
+      description: Modification of Blog
+      security: 
+        - tokenAuth: []
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+           multipart/form-data:
+            schema:
+              type: object
+              properties:
+                present:
+                  type: boolean
+                  example: false
+                title:
+                  type: string
+                  example: post title
+                caption:
+                  type: string
+                  example: post caption
+                image_url:
+                  type: string
+                  example: filename.jpg
+                archive_switch:
+                  type: boolean
+                  example: false
+                file:
+                  type: string
+                  description: uploaded image
+                  format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post_fields'  
+                       
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+    get:
+      tags:
+        - Post
+      summary: Get Post
+      description: Returns the Post by post id
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post_fields'          
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+
+    delete:
+      tags:
+        - Post
+      summary: Delete Post
+      description: Deletes the post
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/connect:
+    get:
+      tags:
+        - Connect
+      summary: Get usernames of all the users
+      description: Returns the list of users
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+                    following:
+                      type: boolean
+                    
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/connect/{user_id}:
+    parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: integer
+        required: true
+        description: User ID
+    post:
+      tags:
+        - Connect
+      summary: create connection
+      description: creates a following relationship
+      security: 
+        - tokenAuth: []
+      responses:
+        '201':
+          description: created
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+
+    delete:
+      tags:
+        - Connect
+      summary: Delete connection
+      description: Deletes the following relationship
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/profilePhoto:
+    post:
+      tags:
+        - ProfilePhoto
+      summary: Upload profile photo
+      description: Uploads the profile photo of current user
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+           multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: uploaded image
+                  format: binary
+      security: 
+        - tokenAuth: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_fields'
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+    put:
+      tags:
+        - ProfilePhoto
+      summary: Change profile photo
+      description: Changes the profile photo of current user
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+           multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: uploaded image
+                  format: binary
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user_fields'
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+    delete:
+      tags:
+        - ProfilePhoto
+      summary: Delete profile photo
+      description: Deletes the profile photo of current user
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int64
+                    example: 10
+                  username:
+                    type: string
+                    example: theUser
+                  email:
+                    type: string
+                    example: john@email.com
+                  dob:
+                    type: string
+                    description: Date of birth
+                    format: date
+                    example: 1996-07-02 
+                  profile_photo:
+                    type: string
+                    nullable: True
+                    description: Image url of the profile photo
+                    example: 
+                  report_format:
+                    type: string
+                    example: 'html'
+                  following:
+                    type: array
+                    items:
+                      type: integer
+                    description: the user id's that the current user is following
+                    example: [2, 3]
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    description: the user id's that the current user is following
+                    nullable: True
+                    example: 
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/inbox:
+    get:
+      tags:
+        - Inboxs
+      summary: Get Inbox
+      description: Returns the list of inbox users
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+                    inbox_id:
+                      type: integer
+                      example: 3
+          
+          
+  /api/inbox/{user_id}:
+    post:
+      tags:
+        - Inboxs
+      summary: Creates a Inbox object
+      description: creates an inbox with the specified user id
+      parameters:
+        - name: user_id
+          in: path
+          description: user id
+          required: true
+          schema:
+            type: integer
+      security: 
+        - tokenAuth: []
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    example: 1
+                  username:
+                    type: string
+                  inbox_id:
+                    type: integer
+                    example: 3
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/message/{inbox_id}:              
+    get:
+      tags:
+        - Messages
+      summary: Get Messages
+      description: Returns the list of messages for the specified inbox user.
+      parameters:
+        - name: inbox_id
+          in: path
+          description: inbox id
+          required: true
+          schema:
+            type: integer
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/message_fields'          
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed 
+          
+  /api/message:
+    post:
+      tags:
+        - Messages
+      summary: send Message
+      description: creates a message object
+      security: 
+        - tokenAuth: []
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Hello how are you
+                inbox_id:
+                  type: integer
+                  example: 1
+                
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message_fields'  
+                       
+        '400':
+          description: Bad Request
+        '409':
+          description: Invalid details
+  
+  /api/followers:
+    get:
+      tags:
+        - Followers
+      summary: Get Followers
+      description: Returns the list of followers of current user
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+                  
+                    
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/otherFollowers/{user_id}:
+    get:
+      tags:
+        - OtherFollowers
+      summary: Get Followers of diffrent user
+      description: Returns the list of followers of other user
+      parameters:
+        - name: user_id
+          in: path
+          description: user id
+          required: true
+          schema:
+            type: integer
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/following:
+    get:
+      tags:
+        - Following
+      summary: Get Following of current user
+      description: Returns the list of users that current user follows
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/otherFollowing/{user_id}:
+    get:
+      tags:
+        - OtherFollowing
+      summary: Get Following of diffrent user
+      description: Returns the list of users that other user follows
+      parameters:
+        - name: user_id
+          in: path
+          description: user id
+          required: true
+          schema:
+            type: integer
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    username:
+                      type: string
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/like/{postId}:
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: integer
+        required: true
+        description: Post ID
+    post:
+      tags:
+        - Likes
+      summary: Add Like
+      description: Add a like to the post
+      security: 
+        - tokenAuth: []
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post_fields'  
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+
+    delete:
+      tags:
+        - Likes
+      summary: Delete Like
+      description: Remove the like from post
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post_fields'  
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/comment/{postId}:
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: integer
+        required: true
+        description: Post ID
+    post:
+      tags:
+        - Comments
+      summary: Add a comment
+      description: Adds a comment to the post
+      security: 
+        - tokenAuth: []
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                  example: A comment on the post
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/post_fields'  
+                       
+        '400':
+          description: Bad Request
+        '409':
+          description: Invalid details
+          
+  /api/notifications:
+    get:
+      tags:
+        - Notifications
+      summary: Get Notifications
+      description: Returns a string of notifications
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: string
+                    example: user1 liked you, user2 started following you
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+    delete:
+      tags:
+        - Notifications
+      summary: Delete Notifications
+      description: Clear the notfications of user after reading
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+
+  /api/export:
+    get:
+      tags:
+        - Exportcsv
+      summary: Exports a zip file
+      description: A zip file containing a csv file and images is exported as a user trigerred backend job
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: A zip file has been sent your email
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+  /api/reportFormat:
+    put:
+      tags:
+        - ReportFormat
+      summary: Change Report Format
+      description: Changes the report format of monthly engagement report
+      requestBody:
+        description: Request Body
+        required: True
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                report_format:
+                  type: string
+                  example: "html"
+      security: 
+        - tokenAuth: []
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                schema:
+                $ref: '#/components/schemas/user_fields'  
+        '400':
+          description: Bad Request
+        '401':
+          description: Authentication Failed
+          
+components:
+  schemas:
+    User:
+      required:
+        - id
+        - username
+        - email
+        - full_name
+        - password
+        - dob
+        - created_at
+        - report_format
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        full_name:
+          type: string
+          example: John wick
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        dob:
+          type: string
+          description: Date of birth
+          format: date
+          example: 1996-07-02 
+        created_at:
+          type: string
+          description: Timestamp of the user creation
+          format: date-time
+          example: 2020-07-02 12:32:12
+        last_login_at:
+          type: string
+          description: Timestamp of the user login
+          format: date-time
+          example: 2020-07-02 12:35:12
+        profile_photo:
+          type: string
+          description: Image url of the profile photo
+          example: filename.jpg
+        notifications:
+          type: string
+          example: 'zyzz,zdfd'
+        report_format:
+          type: string
+          example: 'html'
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Blog'
+          description: posts created by user
+        following:
+          type: array
+          items:
+            $ref: '#/components/schemas/Followmap'
+          description: the users that current user is following
+          
+    Blog:
+      required:
+        - post_id
+        - title
+        - caption
+        - image_url
+        - time_stamp
+        - user_id
+        - username
+        - archive_switch
+        - updated
+      type: object
+      properties:
+        post_id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: theUser
+        caption:
+          type: string
+          example: John wick is a movie
+        image_url:
+          type: string
+          description: Image url of the profile photo
+          example: filename.jpg
+        time_stamp:
+          type: string
+          description: Timestamp of the user creation
+          format: date-time
+          example: 2020-07-02 12:32:12
+        user_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 10
+        username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUser
+        archive_switch:
+          type: boolean
+          description: archive status of post
+          example: False
+        updated:
+          type: boolean
+          description: edited status of post
+          example: False
+        likes:
+          type: array
+          items:
+            type: object
+          description: likes recieved on the post
+        comments:
+          type: array
+          items:
+            type: object
+          description: comments recieved on the post
+    
+    Followmap:
+      required:
+        - map_id
+        - follower_id
+        - following_id
+      type: object
+      properties:
+        map_id:
+          type: integer
+          format: int64
+          example: 1
+        follower_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 10
+        following_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 8
+    Like:
+      required:
+        - like_id
+        - like_username
+        - post_id
+      type: object
+      properties:
+        like_id:
+          type: integer
+          format: int64
+          example: 2
+        like_username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUse
+        post_id:
+          type: integer
+          description: id of Blog(Foreign Key)
+          format: int64
+          example: 5
+    Comment:
+      required:
+        - comment_id
+        - comment_username
+        - content
+        - post_id
+      type: object
+      properties:
+        comment_id:
+          type: integer
+          format: int64
+          example: 1
+        comment_username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUse
+        content:
+          type: string
+          description: the content of comment
+          example: A comment on the post
+        post_id:
+          type: integer
+          description: id of Blog(Foreign Key)
+          format: int64
+          example: 10
+    Inbox:
+      required:
+        - inbox_id
+        - sender_id
+        - sender_username
+        - reciever_id
+        - reciever_username
+        - blocked
+      type: object
+      properties:
+        inbox_id:
+          type: integer
+          format: int64
+          example: 10
+        sender_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+        sender_username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUse
+        reciever_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+        reciever_username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUse
+        blocked:
+          type: boolean
+          description: blocked status of the user assosciated with inbox
+          example: False
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: messages assosciated with sender and reciever users.
+    Message:
+      required:
+        - post_id
+        - title
+        - caption
+        - image_url
+        - time_stamp
+        - user_id
+        - username
+        - archive_switch
+        - updated
+      type: object
+      properties:
+        message_id:
+          type: integer
+          format: int64
+          example: 2
+        message:
+          type: string
+          example: How are you
+        sent:
+          type: boolean
+          description: archive status of post
+          example: True
+        time_stamp:
+          type: string
+          description: Timestamp of the message
+          format: date-time
+          example: 2020-07-02 12:32:12
+        inbox_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 10
+          
+    user_fields:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        email:
+          type: string
+          example: john@email.com
+        dob:
+          type: string
+          description: Date of birth
+          format: date-time
+          example: 02/07/1996 00:00
+        profile_photo:
+          type: string
+          description: Image url of the profile photo
+          example: filename.jpg
+        report_format:
+          type: string
+          example: 'html'
+        following:
+          type: array
+          items:
+            type: integer
+          description: the user id's that the current user is following
+          example: [2, 3]
+        errors:
+          type: array
+          items:
+            type: string
+            nullable: True
+          example: null
+    user_fields1:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        username:
+          type: string
+          example: theUser
+        profile_photo:
+          type: string
+          description: Image url of the profile photo
+          example: filename.jpg
+        report_format:
+          type: string
+          example: 'html'
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/post_fields1'
+          description: posts created by user
+        following:
+          type: integer
+          description: the count of users that current user is following
+          example: 5
+        followers:
+          type: integer
+          description: the count of users that are following you
+          example: 4
+        total_posts:
+          type: integer
+          description: the count of blogs that the user has created
+          example: 8
+          
+    post_fields1:
+      type: object
+      properties:
+        post_id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: post title
+        caption:
+          type: string
+          example: John wick is a movie
+        image_url:
+          type: string
+          description: Image url of the profile photo
+          example: filename.jpg
+        time_stamp:
+          type: string
+          description: Timestamp of the post creation
+          format: date
+          example: 2020-07-02
+        user_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 10
+        username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUser
+        archive_switch:
+          type: boolean
+          description: archive status of post
+          example: False
+        updated:
+          type: boolean
+          description: edited status of post
+          example: False
+    post_fields:
+      type: object
+      properties:
+        post_id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: post title
+        caption:
+          type: string
+          example: John wick is a movie
+        image_url:
+          type: string
+          description: Image url of the profile photo
+          example: filename.jpg
+        time_stamp:
+          type: string
+          description: Timestamp of the post creation
+          format: date
+          example: 2020-07-02
+        user_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 10
+        username:
+          type: string
+          description: username of User(Foreign Key)
+          example: theUser
+        archive_switch:
+          type: boolean
+          description: archive status of post
+          example: False
+        likes:
+          type: array
+          items:
+            type: string
+          description: A list of usernames that liked this post.
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+          description: comments recieved on the post
+    message_fields:
+      type: object
+      properties:
+        message:
+          type: string
+          example: How are you
+        sent:
+          type: boolean
+          description: archive status of post
+          example: True
+        time_stamp:
+          type: string
+          description: Timestamp of the message
+          format: date-time
+          example: 2020-07-02 12:32:12
+        inbox_id:
+          type: integer
+          description: id of User(Foreign Key)
+          format: int64
+          example: 10
+        errors:
+          type: string
+          nullable: True
+          example:
+
+  requestBodies:
+    User:
+      description: User object that needs to be added.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    Blog:
+      description: Blog object that needs to be added.
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/Blog'
+    Comment:
+      description: Comment object that needs to be added.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Blog'
+    Message:
+      description: Message object that needs to be added.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Blog'
+    ReportFormat:
+      description: Report Format of user that needs to be added.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Blog'
+            
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header       
+      name: Authentication-Token

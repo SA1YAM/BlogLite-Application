@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engagement Report</title>
+	<style>
+		.container{
+			  border: 5px solid darkblue;
+			  margin: 5%;
+			  padding: 5%;
+		}
+		.text-center{
+			text-align: center;
+		}
+		.card-title{
+			font-size: 20px;
+		}
+		.table-bordered{
+			border: 1px solid DodgerBlue;
+			border-collapse: collapse;
+			padding: 5px;
+		}
+		.table-simple{
+			padding: 5px;
+		}
+		.img-border{
+			border: 3px solid Orange;
+			border-radius: 1em;
+			padding: 5px;
+		}
+		.text-secondary{
+			color: DarkSlateGrey;
+		}
+		.italic{
+			font-style: italic;
+		}
+		.heading{
+			color: Teal;
+			font-size: 30px;
+		}
+		.primary{
+			color: SlateBlue;
+		}
+		.card-text{
+			font-size: 18px;
+		}
+		
+		@page { 
+			size: A3; 
+			margin: 1cm 
+		}
+		
+		
+	</style>
+	
+	
+</head>
+
+<body>	
+	<br> <br> 
+	<div class="container">
+		<div>
+			<div class="heading">
+				<h3 class="text-center">Engagement Report</h3>
+			</div>			
+		</div>
+		<br> <br>
+		<div>
+			<div class="italic">
+				<p class="card-title">Hello, {{current_user.username}}. Following are your profile stats.</p>
+			</div>
+		</div>
+		<div>
+			<div class="">		
+				<table class="table-simple">
+					  <thead>
+						<tr class="table-bordered">
+						  <th class="text-center"><h5 class="card-title text-secondary">&emsp; Total Posts &emsp; &emsp;</h5></th>
+						  <th class="text-center"><h5 class="card-title text-secondary">&emsp; &emsp; Followers &emsp; &emsp;</h5></th>
+						  <th class="text-center"><h5 class="card-title text-secondary">&emsp; Following &emsp;</h5></th>
+						</tr>
+					  </thead>
+					  <tbody>
+						<tr class="table-simple">
+						  <td class="text-center"><h6 class="card-title text-secondary"> &emsp; {{ current_user.total_posts }} &emsp; &emsp;</h6></td>
+						  <td class="text-center"><h6 class="card-title text-secondary"> &emsp; &emsp; {{ current_user.followers }} &emsp; &emsp;</h6></td>
+						  <td class="text-center"><h6 class="card-title text-secondary"> &emsp; {{ current_user.following }} &emsp;</h6></td>
+						</tr>
+					  </tbody>
+				</table>
+			</div>	
+			
+			<div>
+				{% if current_user.img_pie %}
+				<h5 class="card-title text-center">Popularity Chart</h5>
+				<div class="img-border text-center">
+				  <img src="{{ url_for('static', filename='Images/engagement_pie_' + current_user.username + '.png') }}" alt="..." />
+				  <div class="">
+					<p class="">Fig: This is a pie chart depicting the percentage between your followers Vs the users that you are following.</p>
+				  </div>
+				</div>	
+				{% endif %}
+				<br><br>
+			</div>
+			
+			
+			<br>
+			<div>
+				<div class=" text-start">
+					<h5 class="card-title text-secondary italic">This is your engagement stats on our app from last month</h5>
+				</div>
+			</div>
+			
+			<div>
+				<div class=" text-start">
+					<p class="card-text italic">Total number of users with you have been interacted since last month : {{current_user.interaction}}</p>
+				</div>			
+			</div>
+			<br><br>
+			<div>
+				<div class="text-start">
+					<p class="card-text italic">Total number of Blogs you have created since last month : {{current_user.lmonth_posts}}</p>
+				</div>			
+			</div>
+			<br>
+			<div>
+			{% if current_user.img_bar %}
+				<div class="img-border text-center">
+					  <img src="{{ url_for('static', filename='Images/engagement_bar_' + current_user.username + '.png') }}"  alt="..." />
+					  <div class="">
+						<p class="">Fig: This is a bar chart depicting the relationship between blogs and their likes recieved</p>
+					  </div>
+				</div>
+			{% endif %}
+			</div>
+			<br>
+		</div>
+		<div>
+			<div class="text-start">
+				<p class="card-text">Blogs Details which were created since last month: </p>
+			</div>			
+		</div>
+		<div class="text-center">		
+			<table class="table-bordered">
+				  <thead>
+					<tr class="table-bordered">
+					  <th class="table-bordered">S.No</th>
+					  <th class="table-bordered">Title</th>
+					  <th class="table-bordered">Caption</th>
+					  <th class="table-bordered">Archive status</th>
+					  <th class="table-bordered">Created / Updated On</th>
+					  <th class="table-bordered">Total likes</th>
+					  <th class="table-bordered">Total Comments</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					{% for post in current_user.posts %}
+					<tr class="table-bordered">
+					  <td class="table-bordered">{{loop.index}}</td>
+					  <td class="table-bordered">{{post.title}}</td>
+					  <td class="table-bordered">{{post.caption}}</td>
+					  <td class="table-bordered">{{post.archive_switch}}</td>
+					  <td class="table-bordered">{{post.time_stamp.strftime('%d/%m/%Y %H:%M')}}</td>
+					  <td class="table-bordered">{{post.likes|length}}</td>
+					  <td class="table-bordered">{{post.comments|length}}</td>
+					</tr>
+					{% endfor %}
+				  </tbody>
+			</table>
+		</div>	
+	</div>
+
+</body>
+
+</html>
